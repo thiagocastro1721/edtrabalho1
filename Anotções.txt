@@ -1,0 +1,3 @@
+* Rotação a direita quer dizer que o indice da posição aumenta.
+* "Chave" significa o número que o indice vai aumentar ou diminuir.
+
