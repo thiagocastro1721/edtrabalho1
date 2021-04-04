@@ -34,6 +34,10 @@ alfabeto = ""
 texto_cifrado = ""
 texto_decifrado = ""
 lista_decifrada = []
+lista_de_missoes = []
+lista_de_valores = []
+lista_de_duracao = []
+lista_de_missoes_escolhidas = []
 
 '''
 def adicionar_alfabeto(deque, alfabeto):
@@ -64,7 +68,14 @@ def decifrar(deque, texto_cifrado, chave):
                 lista_decifrada.append(deque.indice(indice_novo))
                 #texto_decifrado.replace(texto_decifrado[], deque.indice(indice_novo))
     texto_cifrado = ''.join(map(str, lista_decifrada))#unir elementos de uma lista e transforma-la em uma string
+    #print("lista_decifrada:")
+    #print(lista_decifrada)
+    lista_de_missoes.append(lista_decifrada)
+    #print("lista_de_missoes:")
+    #print(lista_de_missoes)
     lista_decifrada.clear()#limpado a lista
+    lista_de_valores.append(texto_cifrado.split(",")[2])
+    lista_de_duracao.append(texto_cifrado.split(",")[1])
     return texto_cifrado
     
     
@@ -103,13 +114,22 @@ def selecionar_subconjunto_missoes():#todo o resto da implimentação deve estar
         texto_cifrado = lista_de_strings[i]
         #print("Texto cifrado = %s" % (texto_cifrado))
         print(decifrar(deque, texto_cifrado, chave))
+    #print("lista_de-strings:")
     #print(lista_de_strings)
+    #print("lista_de_valores:")
+    #print(lista_de_valores)
+    #print("lista_de_duracao:")
+    #print(lista_de_duracao)
+    
+    print(f'Valor: {mochila(missoes_cifradas, lista_de_valores, lista_de_duracao, horas_disponiveis)}')
+    
 
 def mochila(n, v, w, W):
     usa = 0
     nao_usa = 0
-    n = n + 1
-    W = W + 1
+    tempo_gasto = 0
+    tempo_restante = 0
+    
     # W capacidade da mochila
     # j linhas
     # x colunas
@@ -118,11 +138,16 @@ def mochila(n, v, w, W):
     # v lista com os valores dos itens
     # M matriz
     
-    # Definiindo a Matriz com n linhas e W colunas
+    # Definindo a Matriz com n linhas e W colunas
     # Preenchendo com zeros
     # Para acessar o elemento matriz[2][3] devemos subtrair 1
     # da linha e da coluna, Assim matriz[1][2].
     # pois o indice comeca com zero
+    
+    # Necessario add 1 a linha e a coluna para os zeros
+    n = n + 1
+    W = W + 1
+    
     matriz = []
     for i in range(n):
         matriz.append([0]*W)
@@ -137,15 +162,45 @@ def mochila(n, v, w, W):
 
     for j in range(1, n):
         for x in range(W):
-            if w[j - 1] > x:
+            if int(w[j - 1]) > x:
                 matriz[j][x] = matriz[j - 1][x]
             else:
-                usa = v[j - 1] + matriz[j - 1][x - w[j - 1]]
+                usa = int(v[j - 1]) + matriz[j - 1][x - int(w[j - 1])]
                 nao_usa = matriz[j - 1][x]
                 if usa > nao_usa:
                     matriz[j][x] = usa
                 else:
                     matriz[j][x] = nao_usa
-    print(matriz)
+                    
+    def quais_itens():
+        s = []
+        j = n - 1 #linha
+        x = W - 1 #coluna
+        #print("j = %d" % (j))
+        #print("x = %d" % (x)) 
+        while j >= 1:
+            if matriz[j][x] == (matriz[j - 1][x - int(w[j - 1])] + int(v[j - 1])):
+                s.append(j - 1)
+                x = x - int(w[j - 1])
+            j = j - 1
+        return s
+    
+    lista_de_missoes_escolhidas = quais_itens() 
+    
+    for i in range(len(lista_de_missoes_escolhidas)):
+        tempo_gasto = tempo_gasto + int(lista_de_duracao[int(lista_de_missoes_escolhidas[i])])
+    
+    #print("tempo_gasto:")
+    #print(tempo_gasto)
+    
+    tempo_restante = (W - 1) - tempo_gasto
+    
+    print("tempo restante: %d" % (tempo_restante))
+    
+    #print("Missoes escolhidas:")
+    #print(lista_de_missoes_escolhidas)
+    #print(matriz)
+    #print("Valor Maximo:")
+    #print(matriz[n -1][W - 1])
     return matriz[n -1][W - 1]
          
